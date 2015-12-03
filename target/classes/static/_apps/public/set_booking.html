@@ -1,0 +1,249 @@
+
+<div ng-controller="FacilityView as vm">
+    <div class="stepwizard">
+        <div class="stepwizard-row setup-panel">
+            <div class="stepwizard-step">
+                <a href="index" type="button" class="btn btn-default btn-circle">1</a>
+
+                <p>Pick Facility</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href="facility/{{vm.booking.facility.id}}" type="button" class="btn btn-default btn-circle">2</a>
+
+                <p>Set Date</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-primary btn-circle" disabled="disabled">3</a>
+
+                <p>Contact Info</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled"><i class="fa fa-check"></i> </a>
+
+                <p>Finish!</p>
+            </div>
+        </div>
+    </div>
+    <h2 class="page-title">Step 3 : Contact details</h2>
+    <form class="form form-horizontal">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Booking Info</div>
+                    <div class="panel-body">
+                        <div class="row">
+                        <div class="col-md-4"><img class="thumbnail col-xs-12" ng-src="api/facility/thumbnail/{{vm.booking.facility.id}}" fallback-src="_assets/images/placeholder.png" /></div>
+                        <div class="col-md-8">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Facility</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.booking.facility.name}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Location</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.booking.facility.location}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">From</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.booking.startDate | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Until</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.booking.endDate | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+                            </div>
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Remark & Contact Info</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Remark</label>
+
+                            <div class="col-md-7">
+                                <textarea class="form-control" name="description"
+                                          ng-model="vm.booking.description" placeholder="Optional remark"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">User Type</label>
+
+                            <div class="col-md-9">
+                                <div class="btn-group">
+                                    <label class="btn btn-success" ng-model="vm.booking.applicant.type"
+                                           btn-radio="0" ng-required="!vm.booking.applicant.type"
+                                           ng-init="vm.booking.applicant.type=0">UNIMAS User</label>
+                                    <label class="btn btn-default" ng-model="vm.booking.applicant.type"
+                                           btn-radio="1" ng-required="!vm.booking.applicant.type">Public</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="vm.booking.applicant.type==0">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Name</label>
+
+                                <div class="col-md-7">
+                                    <input type="text" class="form-control group-input"
+                                           ng-model="vm.booking.applicant.person"
+                                           typeahead="person as person.fullName for person in vm.loadPerson($viewValue)"
+                                           typeahead-min-length="2" placeholder="Type to search..."
+                                           typeahead-on-select="vm.onPersonPick($item, $model, $label)"/>
+
+                                    <div class="well well-sm" ng-if="vm.booking.applicant.person.name"
+                                         style="margin-top:10px">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Name</label>
+
+                                            <div class="col-md-6">
+                                                <p class="form-control-static">{{vm.booking.applicant.person.name}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Email</label>
+
+                                            <div class="col-md-6">
+                                                <p class="form-control-static">{{vm.booking.applicant.person.email}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="vm.booking.applicant.type==1">
+
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Applicant Name</label>
+
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="applicantName"
+                                           ng-model="vm.booking.applicant.name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Applicant Email </label>
+
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="email"
+                                           ng-model="vm.booking.applicant.email">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Applicant Phone </label>
+
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="phone"
+                                           ng-model="vm.booking.applicant.phone">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <button type="button" class="btn btn-primary" ng-click="vm.submitForm()"><i
+                                class="fa fa-send"></i> Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+
+</div>
+<script>
+    App.registerCtrl("FacilityView", FacilityView);
+
+    FacilityView.$inject = ["$http", "$routeParams", "$filter", "$location"];
+
+    function FacilityView($http, $routeParams, $filter, $location) {
+        var vm = this;
+
+        vm.booking = {
+            applicant: {}
+        };
+
+        if ($routeParams.facilityId) {
+            $http.get('api/facility/' + $routeParams.facilityId).then(function (res) {
+                vm.booking.facility = res.data;
+            });
+        }
+
+        vm.booking.startDate = $routeParams.startDate;
+        vm.booking.endDate = $routeParams.endDate;
+
+        vm.getFacilityInfo = function (id) {
+            $http.get("api/facility/" + id).then(
+                    function (res) {
+                        vm.booking.facility = res.data;
+                    }
+            );
+        }
+
+        vm.getBookingList = function () {
+            $http.get("api/booking/list-by-facility/" + $routeParams.facilityId,{
+                params:{
+                    status:[0,2]
+                }
+            }).then(
+                    function (res) {
+                        vm.bookingList = res.data;
+                    }
+            )
+        }
+        vm.getBookingList();
+
+
+        vm.submitForm = function () {
+            var formData = vm.booking;
+            $http.post("api/booking", formData).then(
+                    function (res) {
+                        vm.alertMessage = "Event successfully saved";
+//                        var startDate = $filter('date')(vm.booking.startDate, 'yyyy-MM-ddTHH:mmZ');
+//                        var endDate = $filter('date')(vm.booking.endDate, 'yyyy-MM-ddTHH:mmZ');
+                        $location.path("booking/success/" + res.data.id);
+                    }
+            );
+        }
+
+        vm.loadPerson = function (val) {
+            return $http.get('https://research.unimas.my/iris7/api/lookup/personldap/list?dept=all&stafftype=all', {
+                params: {
+                    q: val
+                }
+            }).then(function (res) {
+                var sresults = res.data.list;
+
+                var results = $filter('limitTo')($filter('filter')(sresults, val), 8);
+                return results;
+            });
+        };
+
+        vm.onPersonPick = function ($item, $model, $label) {
+//            vm.booking.applicant = $item;
+//            vm.selection_made = $item;
+            vm.booking.applicant["name"] = $item.fullName;
+            vm.booking.applicant["email"] = $item.email;
+//            vm.booking.applicant["ph"]= $item.name;
+//            alert(JSON.stringify($item));
+
+        };
+
+
+    }
+
+</script>

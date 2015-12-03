@@ -1,0 +1,116 @@
+<div ng-controller="SuccessView as vm">
+
+    <div class="stepwizard">
+        <div class="stepwizard-row setup-panel">
+            <div class="stepwizard-step">
+                <a href="index" type="button" class="btn btn-default btn-circle">1</a>
+
+                <p>Pick Facility</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+
+                <p>Set Date</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+
+                <p>Contact Info</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-success btn-circle" disabled="disabled"><i class="fa fa-check"></i> </a>
+
+                <p>Finish!</p>
+            </div>
+        </div>
+    </div>
+
+    <h2>Finish!</h2>
+
+    <br/>
+
+    <form class="form form-horizontal">
+        <div class="row">
+        <div class="col-md-6">
+            <p>You have successfully book the following facility</p>
+            <div class="panel panel-default">
+                <div class="panel-heading">Facility Info</div>
+                <div class="panel-body">
+                    <div class="row">
+                    <div class="col-sm-4"><img class="thumbnail col-xs-12" ng-src="api/facility/thumbnail/{{vm.booking.facility.id}}"  fallback-src="_assets/images/placeholder.png" /></div>
+                    <div class="col-sm-8">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">Facility</label>
+
+                        <div class="col-md-6">
+                            <p class="form-control-static">{{vm.booking.facility.name}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">Location</label>
+
+                        <div class="col-md-6">
+                            <p class="form-control-static">{{vm.booking.facility.location}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">Date &amp; Time</label>
+
+                        <div class="col-md-6">
+                            <p class="form-control-static"><strong>{{vm.booking.startDate|date:'yyyy-MM-dd HHmm'}}</strong> until <strong>{{vm.booking.endDate|date:'yyyy-MM-dd HHmm'}}</strong></p>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+
+            <p>And we will contact you through the following detail for the approval notification</p>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Contact Info</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">Applicant Name</label>
+
+                        <div class="col-md-6">
+                            <p class="form-control-static">{{vm.booking.applicant.name}}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">Applicant Email</label>
+
+                        <div class="col-md-6">
+                            <p class="form-control-static">{{vm.booking.applicant.email}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </form>
+    <!--<p>Facility : {{vm.booking.id}}</p>-->
+    <a class="btn btn-primary" href="index">Got it! Back to HOME</a>
+</div>
+
+<script>
+    App.registerCtrl("SuccessView", SuccessView);
+
+    SuccessView.$inject = ["$http", "$routeParams", "$filter"];
+
+    function SuccessView($http, $routeParams, $filter) {
+        var vm = this;
+
+        vm.booking = {};
+
+        if ($routeParams.id) {
+            $http.get('api/booking/' + $routeParams.id).then(function (res) {
+                vm.booking = res.data;
+            });
+        }
+    }
+
+</script>

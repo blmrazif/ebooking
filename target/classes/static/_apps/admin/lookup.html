@@ -1,0 +1,591 @@
+
+<div class="row col-sm-8" ng-controller="LookupCtrl as vm">
+    <h2 class="page-title">Lookup List</h2>
+
+
+    <div class="flash-message" ng-if="vm.alerts.length > 0">
+        <alert ng-repeat="alert in vm.alerts" type="{{alert.type}}" dismiss-on-timeout="6000" close="vm.closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+    <!--<div class="col-md-12">-->
+    <div class="col-sm-3">
+        <input type="text" class="form-control margin-bottom-10" id="lookupTypeFilter" placeholder="Filter lookup"/>
+
+        <div id="lookupTypeList" class="list-group margin-bottom-10">
+            <a ng-click="vm.loadData('FacilityType',true) " class="list-group-item" href>FacilityType</a>
+            <!--<a ng-click="vm.loadData('ImJenisIndustri')" class="list-group-item" href>ImJenisIndustri</a>-->
+        </div>
+    </div>
+    <div class="col-sm-9">
+
+        <div class="jumbotron" ng-if="!vm.lookupName">
+            <p>Please select Lookup Table from the list on the left to view it's data.</p>
+        </div>
+
+        <div class="panel panel-default" ng-if="vm.lookupName">
+            <div class="panel-heading"><i class="icon-reorder"></i> Lookup List : {{vm.lookupName}}</div>
+            <div class="panel-body">
+                <a class="btn btn-info" data-toggle="modal" data-target=".modal-lookup-add" href><i
+                        class="glyphicon glyphicon-plus-sign"></i> Add Data</a>
+
+            </div>
+            <div class="table-responsive">
+            <table class="table table-bordered table-striped" ng-if="vm.data.list.length">
+                <thead>
+                <tr>
+                    <th>CODE</th>
+                    <th>NAME</th>
+                    <th>DESCRIPTION (EN/MY)</th>
+                    <th>THUMBNAIL</th>
+                    <!--<th>&#8645;</th>-->
+                    <!--<th>AS OF</th>-->
+                    <!--<th ng-if="vm.lookupName=='ImDepartment'">HOD</th>-->
+                    <!--<th ng-if="vm.nested">PARENT</th>-->
+                    <!--<th>STATUS</th>-->
+                    <th>ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="lookup in vm.data.list">
+                    <td>{{lookup.code}}</td>
+                    <td>{{lookup.name}}</td>
+                    <td>{{lookup.description}}
+                    <td>{{lookup.thumbnail}}
+                    <img ng-src="api/lookup/FacilityType/thumbnail/{{lookup.code}}" width="20"/>
+                    </td>
+                    <!--<td>{{lookup.ordering}}</td>-->
+                    <!--<td>{{lookup.asOfDate}}</td>-->
+                    <!--<td ng-if="vm.lookupName=='ImDepartment'">{{lookup.hod.name}}</td>-->
+                    <!--<td ng-if="vm.nested">{{lookup.parent.kod}}<span class="text-muted"-->
+                                                                     <!--ng-if="!lookup.parent">ROOT</span></td>-->
+                    <!--<td><span class="label label-success" ng-if="lookup.enabled">ENABLED</span>-->
+                        <!--<span class="label label-danger" ng-if="!lookup.enabled">DISABLED</span></td>-->
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                    data-toggle="dropdown">
+                                Action <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a data-toggle="modal" ng-click="vm.showRemove(lookup)"
+                                       data-target=".modal-lookup-remove" href><i class="icon-remove"></i>
+                                    Remove</a></li>
+                                <li><a data-toggle="modal" ng-click="vm.showEdit(lookup)"
+                                       data-target=".modal-lookup-edit" href><i
+                                        class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+                </div>
+
+            <div class="panel-footer" ng-if="vm.data.list.length == 0">
+                <div class="details">
+                    <h3>No data for {{vm.lookupName}}</h3>
+
+                    <p> There is no data assigned to this lookup table.<br/>
+                        You can assign a new data by clicking on the Add button. </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--</div>-->
+    <!-- Modal dialog for Add Lookup -->
+    <div class="modal fade modal-lookup-add" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Lookup</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form form-horizontal" ng-form="vm.lookupFormX">
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.lookupFormX, 'code') }">
+                            <label class="control-label col-md-3">Code *</label>
+
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="code" ng-model="vm.lookupForm.code" required/>
+
+                                <p ng-show="vm.isInvalid(vm.lookupFormX, 'code')" class="help-block">Code is required</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.lookupFormX, 'name') }">
+                            <label class="control-label col-md-3">Name *</label>
+
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="name" ng-model="vm.lookupForm.name" required/>
+
+                                <p ng-show="vm.isInvalid(vm.lookupFormX, 'name')" class="help-block">Name is required</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.lookupFormX, 'description') }">
+                            <label class="control-label col-md-3">Description (EN) *</label>
+
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="description"
+                                       ng-model="vm.lookupForm.description" required/>
+
+                                <p ng-show="vm.isInvalid(vm.lookupFormX, 'description')" class="help-block">Description is
+                                    required</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Thumbnail</label>
+
+                            <div class="col-md-9">
+                                <span class="btn btn-default btn-file">{{vm.lookupForm.thumbnail?vm.lookupForm.thumbnail : 'Browse...'}} <input
+                                        class="form-control" type="file"
+                                        onchange="angular.element(this).scope().vm.uploadThumbnail(this.files,'lookupForm')"
+                                        ng-model="data.research.flowChartFileUrl"/></span>
+
+                                <div class="alert alert-default" ng-if="vm.lookupForm.thumbnail">
+                                    <ul>
+                                        <li>File Name : {{vm.lookupForm.thumbnail}}</li>
+                                        <!--<li>Upload Path : <a-->
+                                                <!--ng-href="https://research.unimas.my{{data.research.flowChartFileUrl}}"-->
+                                                <!--target="_blank">{{data.research.flowChartFileUrl}}</a>-->
+                                        <!--</li>-->
+                                    </ul>
+                                </div>
+                                <div class="alert alert-danger" ng-if="!vm.fileUploadSupport">
+                                    Your current browser doesn't support HTML5 file upload method.
+                                    Please update your browser version.
+                                </div>
+                                </div>
+                            </div>
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label col-md-3">Description (MY)</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--<input type="text" class="form-control" name="keteranganBm"-->
+                                       <!--ng-model="vm.lookupForm.keteranganBm"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-if="vm.lookupName == 'ImDepartment'">-->
+                            <!--<label class="control-label col-md-3">Head of Department</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--<input type="text" class="form-control" name="hod"-->
+                                       <!--ng-model="vm.lookupForm.hod" typeahead-min-length="2"-->
+                                       <!--typeahead="person as person.name for person in loadPerson($viewValue)" />-->
+                                <!--<p class="help-block" ng-if="vm.lookupForm.hod.staffNo">Staff No : {{vm.lookupForm.hod.staffNo}}</p>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-if="vm.nested">-->
+                            <!--<label class="control-label col-md-3">Parent</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--&lt;!&ndash;<input type="text" class="form-control" name="keteranganBm" ng-model="vm.lookupForm.parent.kod" />&ndash;&gt;-->
+                                <!--<ui-select ng-model="vm.lookupForm.parent" theme="bootstrap" name="formparent">-->
+                                    <!--<ui-select-match placeholder="Please select..."> {{$select.selected.keteranganBi}}-->
+                                    <!--</ui-select-match>-->
+                                    <!--<ui-select-choices repeat="c in vm.data.list | filter: $select.search">-->
+                                        <!--{{c.keteranganBi}}-->
+                                    <!--</ui-select-choices>-->
+                                <!--</ui-select>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label col-md-3">Ordering</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--<input type="number" class="form-control" name="ordering"-->
+                                       <!--ng-model="vm.lookupForm.ordering"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.lookupFormX, 'enabled') }">-->
+                            <!--<label class="control-label col-md-3">Status *</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--&lt;!&ndash;<div class="btn-group">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<label class="btn btn-success" ng-model="vm.lookupForm.enabled" name="enabled" btn-radio="1" ng-required="!vm.lookupForm.enabled">Enabled</label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<label class="btn btn-danger" ng-model="vm.lookupForm.enabled" name="enabled" btn-radio="0" ng-required="!vm.lookupForm.enabled">Disabled</label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                                <!--<div class="btn-group">-->
+                                    <!--<label class="btn btn-success" ng-model="vm.lookupForm.enabled" btn-radio="1" name="enabled" ng-required="!vm.lookupForm.enabled">Enabled</label>-->
+                                    <!--<label class="btn btn-danger" ng-model="vm.lookupForm.enabled" btn-radio="0" name="enabled" ng-required="!vm.lookupForm.enabled">Disabled</label>-->
+                                <!--</div>-->
+
+
+                                <!--<p ng-show="vm.isInvalid(vm.lookupFormX, 'enabled')" class="help-block">Status is required</p>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="vm.lookupFormX.$invalid"
+                            ng-click="vm.addLookup()"><i class="glyphicon glyphicon-plus-sign"></i> Add Lookup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal dialog ends -->
+
+
+    <!-- Modal dialog for Edit Lookup -->
+    <div class="modal fade modal-lookup-edit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Lookup</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form form-horizontal" ng-form="lookupFormY">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Code</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.curLookup.code}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Name</label>
+
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" ng-model="vm.curLookup.name" required/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Description (EN) *</label>
+
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" ng-model="vm.curLookup.description" required/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Thumbnail</label>
+
+                            <div class="col-md-9">
+                                <span class="btn btn-default btn-file">{{vm.curLookup.thumbnail?vm.curLookup.thumbnail : 'Browse...'}} <input
+                                        class="form-control" type="file"
+                                        onchange="angular.element(this).scope().vm.uploadThumbnail(this.files,'curLookup')"
+                                        ng-model="data.research.flowChartFileUrl"/></span>
+
+                                <div class="alert alert-default" ng-if="vm.lookupForm.thumbnail">
+                                    <ul>
+                                        <li>File Name : {{vm.curLookup.thumbnail}}</li>
+                                    </ul>
+                                </div>
+                                <div class="alert alert-danger" ng-if="!vm.fileUploadSupport">
+                                    Your current browser doesn't support HTML5 file upload method.
+                                    Please update your browser version.
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label col-md-3">Description (MY)</label>-->
+
+                            <!--<div class="col-md-6">-->
+                                <!--<input type="text" class="form-control" ng-model="vm.curLookup.keteranganBm"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-if="vm.lookupName == 'ImDepartment'">-->
+                            <!--<label class="control-label col-md-3">Head of Department</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--<input type="text" class="form-control" name="hod"-->
+                                       <!--ng-model="vm.curLookup.hod" typeahead-min-length="2"-->
+                                       <!--typeahead="person as person.name for person in vm.loadPerson($viewValue)" />-->
+                                <!--<p class="help-block" ng-if="vm.curLookup.hod.staffNo">Staff No : {{vm.curLookup.hod.staffNo}}</p>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-if="vm.nested">-->
+                            <!--<label class="control-label col-md-3">Parent</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--&lt;!&ndash;<input type="text" class="form-control" ng-model="vm.curLookup.parent.kod" />&ndash;&gt;-->
+                                <!--<ui-select ng-model="vm.curLookup.parent" theme="bootstrap">-->
+                                    <!--<ui-select-match placeholder="Please select..."> {{$select.selected.keteranganBi}}-->
+                                    <!--</ui-select-match>-->
+                                    <!--<ui-select-choices repeat="c in vm.data.list | filter: $select.search">-->
+                                        <!--{{c.keteranganBi}}-->
+                                    <!--</ui-select-choices>-->
+                                <!--</ui-select>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label col-md-3">Ordering</label>-->
+
+                            <!--<div class="col-md-6">-->
+                                <!--<input type="number" class="form-control" ng-model="vm.curLookup.ordering"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label col-md-3">Status *</label>-->
+
+                            <!--<div class="col-md-9">-->
+                                <!--&lt;!&ndash;<div class="btn-group">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<label class="btn btn-success" ng-model="vm.curLookup.enabled" name="enabled" btn-radio="1" ng-required="!vm.curLookup.enabled"> Enabled</label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<label class="btn btn-danger" ng-model="vm.curLookup.enabled" name="enabled" btn-radio="0" ng-required="!vm.curLookup.enabled"> Disabled</label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                                <!--<div class="btn-group">-->
+                                    <!--<label class="btn btn-success" ng-model="vm.curLookup.enabled" btn-radio="1" ng-required="!vm.curLookup.enabled">Enabled</label>-->
+                                    <!--<label class="btn btn-danger" ng-model="vm.curLookup.enabled" btn-radio="0" ng-required="!vm.curLookup.enabled">Disabled</label>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="vm.lookupForm.$invalid"
+                            ng-click="vm.updateLookup(vm.curLookup)"><i class="glyphicon glyphicon-plus-sign"></i> Save Lookup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal dialog ends -->
+
+    <!-- Modal dialog for Edit Lookup -->
+    <div class="modal fade modal-lookup-remove" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Remove Lookup</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure you want to remove this entry?
+                    </p>
+
+                    <div class="form form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">Code</label>
+
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{{vm.curLookup.code}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">Name</label>
+
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{{vm.curLookup.name}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">Description (MY)</label>
+
+                            <div class="col-sm-6">
+                                <p class="form-control-static">{{vm.curLookup.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-click="vm.removeLookup(vm.curLookup)"><i class="icon-minus-sign-alt"></i> Remove Lookup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal dialog ends -->
+</div>
+
+
+<!--<script type="text/javascript" src="_vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>-->
+
+
+<script>
+    App.registerCtrl('LookupCtrl', LookupCtrl);
+
+    LookupCtrl.$inject = ['$http', '$filter', '$routeParams','Upload'];
+
+    function LookupCtrl($http, $filter, $routeParams,Upload) {
+
+        var vm = this;
+
+        vm.alerts = [];
+        vm.addAlert = function(type, message) {
+            vm.alerts.push({type: type, msg: message});
+        };
+        vm.closeAlert = function(index) {
+            vm.alerts.splice(index, 1);
+        };
+
+
+
+//        vm.loadData = function (val) {
+//            vm.lookupName = val;
+//            return $http.get('api/lookup/' + val + '/admin/list').then(function (res) {
+//                vm.data.list = res.data;
+//                //alert(res.data);
+//            });
+//        };
+
+        vm.lookupName = '';
+        // vm.curLookup = {};
+        vm.data = {'list': []};
+
+        vm.isInvalid = function (form, field) {
+            return form[field].$invalid && !form[field].$pristine;
+        };
+        vm.addLookup = function () {
+            var lookupFormData = vm.lookupForm;
+
+            $http({
+                url: 'api/lookup/' + vm.lookupName + '/create',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                data: lookupFormData
+            }).success(function (res) {
+                $('.modal-lookup-add').modal('hide');
+                vm.data.list.push(res);
+                vm.lookupForm = {};
+                vm.lookupFormX.$setPristine();
+                vm.addAlert('success',"Lookup successfully added");
+            });
+        };
+
+        vm.updateLookup = function (obj) {
+            var lookupFormData = obj;
+
+            $http({
+                url: 'api/lookup/' + vm.lookupName + '/create',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                data: lookupFormData
+            }).success(function (res) {
+                $('.modal-lookup-edit').modal('hide');
+                vm.loadData(vm.lookupName);
+                vm.addAlert('success',"Lookup successfully updated");
+            });
+
+        };
+
+        vm.fileUploadSupport = true;
+        vm.uploadThumbnail = function (files,model) {
+            if (window.FormData !== undefined) {
+                var fd = new FormData();
+                fd.append("file", files[0]);
+
+                $http.post("api/lookup/FacilityType/thumbnail/upload", fd, {
+                    withCredentials: true,
+                    headers: {'Content-Type': undefined},
+                    transformRequest: angular.identity
+                }).success(function (res) {
+                    vm[model]["thumbnail"] = res.fileUrl;
+
+                }).error(function () {
+
+                });
+            } else {
+                vm.fileUploadSupport = false;
+            }
+        };
+
+//        vm.loadPerson = function(val) {
+//            return $http.get('api/lookup/personhcmvw/list', {
+//                params: {
+//                    q: val
+//                }
+//            }).then(function(res) {
+//                var sresults = res.data.list;
+//
+//                var results = $filter('limitTo')($filter('filter')(sresults, val), 8);
+//                return results;
+//            });
+//        };
+
+        vm.showEdit = function (obj) {
+            vm.curLookup = obj;
+        };
+
+        vm.showRemove = function (obj) {
+            vm.curLookup = obj;
+        };
+
+        vm.removeLookup = function (obj) {
+            var lookupFormData = obj;
+
+            $http({
+                url: 'api/lookup/' + vm.lookupName + '/delete',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                data: lookupFormData
+            }).success(function (res) {
+                $('.modal-lookup-remove').modal('hide');
+                vm.loadData(vm.lookupName);
+                vm.addAlert('success',"Lookup successfully removed");
+            });
+        };
+
+        vm.showRemove = function (obj) {
+            vm.curLookup = obj;
+        }
+
+
+
+
+
+        /* Pagination */
+
+        vm.pageSize=15;
+
+        vm.loadData = function(val, nested){
+            vm.nested = nested;
+            vm.lookupName = val;
+            vm.getData(1);
+        }
+
+        vm.getData = function(pageNumber) {
+            $http.get("api/lookup/" + vm.lookupName + "/list")
+                    .then(function(response) {
+//                        vm.totalItems = response.data.totalElements;
+                        vm.data.list = response.data;
+                    });
+        }
+
+    }
+
+
+
+
+    (function ($) {
+        jQuery.expr[':'].Contains = function (a, i, m) {
+            return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+        };
+
+        function listFilter(input, list) {
+
+            $(input)
+                    .change(function () {
+                        var filter = $(this).val();
+                        if (filter) {
+                            $(list).find("a:not(:Contains(" + filter + "))").slideUp();
+                            $(list).find("a:Contains(" + filter + ")").slideDown();
+                        } else {
+                            $(list).find("a").slideDown();
+                        }
+                        return false;
+                    })
+                    .keyup(function () {
+                        $(this).change();
+                    });
+        }
+
+        $(function () {
+            listFilter($("#lookupTypeFilter"), $("#lookupTypeList"));
+        });
+    }(jQuery));
+
+
+</script>

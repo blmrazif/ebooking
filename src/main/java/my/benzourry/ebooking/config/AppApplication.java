@@ -11,9 +11,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //@EntityScan(basePackages = {"my.unimas.ebooking.core.model"})
 
 @Configuration
-@ComponentScan(basePackages = {"my.unimas.ebooking"})
-@EnableJpaRepositories(basePackages = "my.unimas.ebooking.core.dao")
-@EntityScan(basePackages = {"my.unimas.ebooking.core.model"})
+@ComponentScan(basePackages = {"my.benzourry.ebooking"})
+@EnableJpaRepositories(basePackages = "my.benzourry.ebooking.core.dao")
+@EntityScan(basePackages = {"my.benzourry.ebooking.core.model"})
 @EnableAutoConfiguration
 public class AppApplication {
 
