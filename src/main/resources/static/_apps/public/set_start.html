@@ -1,0 +1,160 @@
+<link href="_assets/css/animation-repeat.css" rel="stylesheet" >
+<div ng-controller="CategoryList as vm">
+
+    <div class="stepwizard">
+        <div class="stepwizard-row setup-panel">
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-primary btn-circle" disabled="disabled">1</a>
+                <p>Pick Facility</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+                <p>Set Date</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+                <p>Contact Info</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle"><i class="fa fa-check"></i> </a>
+                <p>Finish!</p>
+            </div>
+        </div>
+    </div>
+    <h2 class="page-title page-title--red">Step 1 : Pick the facility</h2>
+    <div class="row">
+        <div class="col-sm-4">
+            <style>
+
+                .tile.ng-enter {
+                    opacity: 0.0 ;
+                    margin-left: 60px ;
+                    width: 100px;
+                    transition: all ease .4s ;
+                }
+                .tile.ng-enter-stagger {
+                    transition-delay: 0.05s ;
+                    -webkit-transition-delay: 0.05s ;
+                    /*
+                        FROM THE DOCUMENTATION:
+                        In case the stagger doesn't work then these two values must be set
+                        to 0 to avoid an accidental CSS inheritance.
+                    */
+                    transition-duration: 0s ;
+                    -webkit-transition-duration: 0s ;
+                }
+                .tile.ng-enter-active {
+                    opacity: 1.0 ;
+                    margin-left: 0px ;
+                    width:160px;
+                }
+
+                .category{
+                    margin-right: -18px !important;
+                    margin-bottom: -10px;
+                }
+                .category-item{
+
+                    position: relative;
+                    display: block;
+                    padding: 10px 15px;
+                    margin-bottom: -1px;
+                    border-right:solid 3px #ccc;
+                    background-color: #FFF;
+
+                    /*border: 1px solid #DDD;*/
+                }
+                a:hover, a:active, a:focus {outline: 0;text-decoration: none;}
+                .category-item::after{
+                }
+                .category-item::before{
+                }
+                .category-item:hover{
+                    text-decoration: none;
+                    background: #eee;
+                }
+                .category-item:hover::before, .category-item.active:before{
+                    content:"\A";
+                    border-style: solid;
+                    border-width: 10px 10px 10px 0;
+                    border-color: transparent #ccc transparent transparent;
+                    position: absolute;
+                    right: 0px;
+                    top:20px;
+
+                }
+                .category-item .title{
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                .category-item .meta{
+                    font-size: 12px;
+                    color:#666;
+                }
+            </style>
+            <div class="category">
+                <a class="category-item" data-color="#e74c3c" ng-class="category.code == vm.selectedCategoryId?'active':''" href ng-repeat="category in vm.categoryList" ng-click="vm.getFacilityList(category.code)">
+                    <div class="title">{{category.name}}</div>
+                    <div class="meta">{{category.description}}</div>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-8 tile-container">
+            <div ng-show="vm.facilityList" class="example-animate-container">
+                <!---->
+                <a class="tile single animate-repeat" ng-repeat="facility in vm.facilityList" ng-href="facility/{{facility.id}}">
+                    <!--<div class="timage" ng-style="background-image:url(api/facility/thumbnail/{{facility.id}})"></div>-->
+                    <img ng-src="api/facility/thumbnail/{{facility.id}}" fallback-src="_assets/images/placeholder.png"/>
+                    <div class="title">{{facility.name}}</div>
+                    <!--{{facility.name}}-->
+                </a>
+            </div>
+            <div style="padding:0 20px 20px 20px;" ng-if="!vm.facilityList">
+                <h2>To start, please select the category on the left</h2>
+            </div>
+            <div align="center" class="padding:0 20px 20px 20px;" ng-if="vm.facilityList.length==0">
+                <div><i class="fa fa-5x fa-warning text-muted"></i></div>
+                <h2 class="text-muted">No facility available for booking</h2>
+            </div>
+            <!--<div ng-if="!vm.facilityList">To start, please select the category first</div>-->
+        </div>
+    </div>
+
+
+    <script>
+        App.registerCtrl("CategoryList", CategoryList);
+
+        CategoryList.$inject = ["$http"];
+
+        function CategoryList ($http) {
+            var vm = this;
+
+            vm.getCategoryList = function(){
+                $http.get("api/lookup/FacilityType/list").then(
+                        function(res){
+                            vm.categoryList = res.data;
+                        }
+                );
+            }
+
+            vm.getCategoryList();
+
+
+            vm.getFacilityList = function(categoryId){
+                vm.selectedCategoryId = categoryId;
+                var url = "api/facility/list/"+categoryId;
+//                if ($routeParams.id){
+//                    url += '/'+$routeParams.id;
+//                }
+                $http.get(url).then(
+                        function(res){
+                            vm.facilityList = res.data;
+                        }
+                );
+            }
+
+        }
+
+
+    </script>
+</div>

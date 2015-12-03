@@ -1,0 +1,527 @@
+
+<div class="row col-sm-8" ng-controller="FacilityCtrl as vm">
+
+    <h2 class="page-title">Facility List</h2>
+
+        <div class="panel panel-default">
+            <div class="panel-heading"><i class="icon-reorder"></i> Facility List : {{vm.facilityName}}</div>
+            <div class="panel-body">
+                <a class="btn btn-info" data-toggle="modal" data-target=".modal-facility-add" href><i
+                        class="glyphicon glyphicon-plus-sign"></i> Add Data</a>
+
+            </div>
+            <div class="table-responsive">
+            <table class="table table-bordered table-striped" ng-if="vm.data.list.length">
+                <thead>
+                <tr>
+                    <!--<th>ID</th>-->
+                    <th>FACILITY</th>
+                    <th>LOCATION</th>
+                    <th>TYPE</th>
+                    <th>LIMIT</th>
+                    <th>THUMBNAIL</th>
+                    <th>ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="facility in vm.data.list">
+                    <!--<td>{{facility.id}}</td>-->
+                    <td><div>{{facility.name}}</div>
+                        <div class="meta text-muted">{{facility.description}}</div>
+                        <!--<div class="meta text-muted" ng-if="facility.timeLimit">{{facility.time}}</div>-->
+                    </td>
+                    <td>{{facility.location}}</td>
+                    <td>{{facility.timeLimit}}</td>
+                    <td>{{facility.facilityType.name}}</td>
+                    <td><img ng-src="api/facility/thumbnail/{{facility.id}}"  fallback-src="_assets/images/placeholder.png" width="20"/>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                    data-toggle="dropdown">
+                                Action <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a data-toggle="modal" ng-click="vm.showRemove(facility)"
+                                       data-target=".modal-facility-remove" href><i class="icon-remove"></i>
+                                    Remove</a></li>
+                                <li><a data-toggle="modal" ng-click="vm.showEdit(facility)"
+                                       data-target=".modal-facility-edit" href><i
+                                        class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+                </div>
+
+            <div class="panel-footer" ng-if="vm.data.list.length == 0">
+                <div class="details">
+                    <h3>No data</h3>
+
+                    <p> There is no data assigned to this facility table.<br/>
+                        You can assign a new data by clicking on the Add button. </p>
+                </div>
+            </div>
+
+        </div>
+
+    <!--</div>-->
+
+    <!--</div>-->
+    <!-- Modal dialog for Add Facility -->
+    <div class="modal fade modal-facility-add" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add Facility</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form form-horizontal" ng-form="vm.facilityFormX">
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.facilityFormX, 'name') }">
+                            <label class="control-label col-md-3">Name *</label>
+
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="name" ng-model="vm.facilityForm.name" required/>
+
+                                <p ng-show="vm.isInvalid(vm.facilityFormX, 'name')" class="help-block">Name is required</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.facilityFormX, 'description') }">
+                            <label class="control-label col-md-3">Description (EN) *</label>
+
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="description"
+                                       ng-model="vm.facilityForm.description" required/>
+
+                                <p ng-show="vm.isInvalid(vm.facilityFormX, 'description')" class="help-block">Description is
+                                    required</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.facilityFormX, 'location') }">
+                            <label class="control-label col-md-3">Location</label>
+
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="location"
+                                       ng-model="vm.facilityForm.location" required/>
+
+                                <p ng-show="vm.isInvalid(vm.facilityFormX, 'location')" class="help-block">Location is
+                                    required</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{ 'has-error' : vm.isInvalid(vm.facilityFormX, 'timeLimit') }">
+                            <label class="control-label col-md-3">Time Limit (minutes)</label>
+
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" name="timeLimit"
+                                       ng-model="vm.facilityForm.timeLimit"/>
+
+                                <p ng-show="vm.isInvalid(vm.facilityFormX, 'timeLimit')" class="help-block">Invalid number</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Facility Type</label>
+
+                            <div class="col-md-6">
+                                <select class="form-control" ng-model="vm.facilityForm.facilityType" ng-options="type as type.description for type in vm.facilityTypeList">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Thumbnail</label>
+
+                            <div class="col-md-6">
+                                <span class="btn btn-default btn-file">{{vm.facilityForm.thumbnail?vm.facilityForm.thumbnail : 'Browse...'}} <input
+                                        class="form-control" type="file"
+                                        onchange="angular.element(this).scope().vm.uploadThumbnail(this.files,'facilityForm')"
+                                        /></span>
+
+                                <!--<div class="alert alert-default" ng-if="vm.facilityForm.thumbnail">-->
+                                    <!--<img class="thumbnail" ng-src="api/facility/thumbnail/{{vm.facilityForm.thumbnail}}"  fallback-src="_assets/images/placeholder.png" width="20"/>-->
+                                <!--</div>-->
+                                <div class="alert alert-danger" ng-if="!vm.fileUploadSupport">
+                                    Your current browser doesn't support HTML5 file upload method.
+                                    Please update your browser version.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="vm.facilityFormX.$invalid"
+                            ng-click="vm.addFacility()"><i class="glyphicon glyphicon-plus-sign"></i> Add Facility
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal dialog ends -->
+
+
+    <!-- Modal dialog for Edit Facility -->
+    <div class="modal fade modal-facility-edit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Facility</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form form-horizontal" ng-form="facilityFormY">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Name</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.curFacility.name}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Description (EN) *</label>
+
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" ng-model="vm.curFacility.description" required/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Location</label>
+
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" ng-model="vm.curFacility.location" required/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Time Limit (minutes)</label>
+
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" ng-model="vm.curFacility.timeLimit" required/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Facility Type</label>
+
+                            <div class="col-md-6">
+                                <select class="form-control" ng-model="vm.curFacility.facilityType" ng-options="type as type.description for type in vm.facilityTypeList">
+                                </select>
+
+                                <!--<select ng-model="vm.curFacility.facilityType.code">-->
+                                    <!--<option ng-repeat="ft in vm.facilityTypeList" value="{{ft.code}}">{{ft.name}}</option>-->
+                                <!--</select>-->
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Thumbnail</label>
+
+                            <div class="col-md-6">
+                                <span class="btn btn-default btn-file">{{vm.curFacility.thumbnail?vm.curFacility.thumbnail : 'Browse...'}} <input
+                                        class="form-control" type="file"
+                                        onchange="angular.element(this).scope().vm.uploadThumbnail(this.files,'curFacility')"
+                                        /></span>
+
+                                <!--<div class="alert alert-default" ng-if="vm.curFacility.thumbnail">-->
+                                    <!--<img class="thumbnail" ng-src="api/facility/thumbnail/{{vm.curFacility.thumbnail}}"  fallback-src="_assets/images/placeholder.png" width="20"/>-->
+                                    <!--<ul>-->
+                                        <!--<li>File Name : {{vm.curFacility.thumbnail}}</li>-->
+                                    <!--</ul>-->
+                                <!--</div>-->
+                                <div class="alert alert-danger" ng-if="!vm.fileUploadSupport">
+                                    Your current browser doesn't support HTML5 file upload method.
+                                    Please update your browser version.
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="form-group">-->
+                        <!--<label class="control-label col-md-3">Description (MY)</label>-->
+
+                        <!--<div class="col-md-6">-->
+                        <!--<input type="text" class="form-control" ng-model="vm.curFacility.keteranganBm"/>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-if="vm.facilityName == 'ImDepartment'">-->
+                        <!--<label class="control-label col-md-3">Head of Department</label>-->
+
+                        <!--<div class="col-md-9">-->
+                        <!--<input type="text" class="form-control" name="hod"-->
+                        <!--ng-model="vm.curFacility.hod" typeahead-min-length="2"-->
+                        <!--typeahead="person as person.name for person in vm.loadPerson($viewValue)" />-->
+                        <!--<p class="help-block" ng-if="vm.curFacility.hod.staffNo">Staff No : {{vm.curFacility.hod.staffNo}}</p>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group" ng-if="vm.nested">-->
+                        <!--<label class="control-label col-md-3">Parent</label>-->
+
+                        <!--<div class="col-md-9">-->
+                        <!--&lt;!&ndash;<input type="text" class="form-control" ng-model="vm.curFacility.parent.kod" />&ndash;&gt;-->
+                        <!--<ui-select ng-model="vm.curFacility.parent" theme="bootstrap">-->
+                        <!--<ui-select-match placeholder="Please select..."> {{$select.selected.keteranganBi}}-->
+                        <!--</ui-select-match>-->
+                        <!--<ui-select-choices repeat="c in vm.data.list | filter: $select.search">-->
+                        <!--{{c.keteranganBi}}-->
+                        <!--</ui-select-choices>-->
+                        <!--</ui-select>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                        <!--<label class="control-label col-md-3">Ordering</label>-->
+
+                        <!--<div class="col-md-6">-->
+                        <!--<input type="number" class="form-control" ng-model="vm.curFacility.ordering"/>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                        <!--<label class="control-label col-md-3">Status *</label>-->
+
+                        <!--<div class="col-md-9">-->
+                        <!--&lt;!&ndash;<div class="btn-group">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<label class="btn btn-success" ng-model="vm.curFacility.enabled" name="enabled" btn-radio="1" ng-required="!vm.curFacility.enabled"> Enabled</label>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<label class="btn btn-danger" ng-model="vm.curFacility.enabled" name="enabled" btn-radio="0" ng-required="!vm.curFacility.enabled"> Disabled</label>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                        <!--<div class="btn-group">-->
+                        <!--<label class="btn btn-success" ng-model="vm.curFacility.enabled" btn-radio="1" ng-required="!vm.curFacility.enabled">Enabled</label>-->
+                        <!--<label class="btn btn-danger" ng-model="vm.curFacility.enabled" btn-radio="0" ng-required="!vm.curFacility.enabled">Disabled</label>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="vm.facilityForm.$invalid"
+                            ng-click="vm.updateFacility(vm.curFacility)"><i class="glyphicon glyphicon-plus-sign"></i> Save Facility
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal dialog ends -->
+
+    <!-- Modal dialog for Edit Facility -->
+    <div class="modal fade modal-facility-remove" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Remove Facility</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure you want to remove this entry? To disable facility, choose <kbd>Action</kbd> >
+                        <kbd><i class="glyphicon glyphicon-edit"></i> Edit</kbd> > <kbd>Disable</kbd> instead.
+                    </p>
+
+                    <div class="form form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Code</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.curFacility.kod}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Description (MY)</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.curFacility.keteranganBi}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Description (MY)</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.curFacility.keteranganBm}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-click="vm.removeFacility(vm.curFacility)"><i class="icon-minus-sign-alt"></i> Remove Facility
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal dialog ends -->
+</div>
+
+
+<!--<script type="text/javascript" src="_vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>-->
+
+
+<script>
+    App.registerCtrl('FacilityCtrl', FacilityCtrl);
+
+    FacilityCtrl.$inject = ['$http', '$filter', '$routeParams'];
+
+    function FacilityCtrl($http, $filter, $routeParams) {
+
+        var vm = this;
+
+        vm.alerts = [];
+        vm.addAlert = function(type, message) {
+            vm.alerts.push({type: type, msg: message});
+        };
+        vm.closeAlert = function(index) {
+            vm.alerts.splice(index, 1);
+        };
+
+
+
+//        vm.loadData = function (val) {
+//            vm.facilityName = val;
+//            return $http.get('api/facility/' + val + '/admin/list').then(function (res) {
+//                vm.data.list = res.data;
+//                //alert(res.data);
+//            });
+//        };
+
+//        vm.facilityName = '';
+        // vm.curFacility = {};
+        vm.data = {'list': []};
+
+        vm.isInvalid = function (form, field) {
+            return form[field].$invalid && !form[field].$pristine;
+        };
+        vm.addFacility = function () {
+            var facilityFormData = vm.facilityForm;
+            facilityFormData["administrator"] = activeProfile.username;
+            facilityFormData["administratorEmail"] = activeProfile.email;
+
+            $http({
+                url: 'api/facility',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                data: facilityFormData
+            }).success(function (res) {
+                $('.modal-facility-add').modal('hide');
+                vm.data.list.push(res);
+                vm.facilityForm = {};
+                vm.facilityFormX.$setPristine();
+                vm.addAlert('success',"Facility successfully added");
+            });
+        };
+
+        vm.updateFacility = function (obj) {
+            var facilityFormData = obj;
+
+            $http({
+                url: 'api/facility',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                data: facilityFormData
+            }).success(function (res) {
+                $('.modal-facility-edit').modal('hide');
+                vm.addAlert('success',"Facility successfully updated");
+            });
+
+        };
+
+        vm.fileUploadSupport = true;
+        vm.uploadThumbnail = function (files,model) {
+            if (window.FormData !== undefined) {
+                var fd = new FormData();
+                fd.append("file", files[0]);
+
+                $http.post("api/facility/thumbnail/upload", fd, {
+                    withCredentials: true,
+                    headers: {'Content-Type': undefined},
+                    transformRequest: angular.identity
+                }).success(function (res) {
+                    vm[model]["thumbnail"] = res.fileUrl;
+
+                }).error(function () {
+
+                });
+            } else {
+                vm.fileUploadSupport = false;
+            }
+        };
+
+
+//        vm.loadPerson = function(val) {
+//            return $http.get('api/facility/personhcmvw/list', {
+//                params: {
+//                    q: val
+//                }
+//            }).then(function(res) {
+//                var sresults = res.data.list;
+//
+//                var results = $filter('limitTo')($filter('filter')(sresults, val), 8);
+//                return results;
+//            });
+//        };
+
+        vm.facilityForm = {}
+        vm.showEdit = function (obj) {
+            vm.curFacility = obj;
+        };
+
+        vm.showRemove = function (obj) {
+            vm.curFacility = obj;
+        };
+
+        vm.removeFacility = function (obj) {
+            var facilityFormData = obj;
+
+            $http({
+                url: 'api/facility/delete',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                data: facilityFormData
+            }).success(function (res) {
+                $('.modal-facility-remove').modal('hide');
+                vm.addAlert('success',"Facility successfully removed");
+            });
+        };
+
+        vm.showRemove = function (obj) {
+            vm.curFacility = obj;
+        }
+
+
+
+
+
+        /* Pagination */
+//
+//        vm.pageSize=15;
+//
+//        vm.loadData = function(val, nested){
+//            vm.nested = nested;
+//            vm.facilityName = val;
+//            vm.getData(1);
+//        }
+
+        $http.get("api/lookup/FacilityType/list")
+                .then(function(response) {
+//                        vm.totalItems = response.data.totalElements;
+                    vm.facilityTypeList = response.data;
+                });
+
+        vm.getData = function() {
+            $http.get("api/facility/user/list")
+                    .then(function(response) {
+//                        vm.totalItems = response.data.totalElements;
+                        vm.data.list = response.data;
+                    });
+        }
+
+        vm.getData();
+
+    }
+
+
+
+
+
+</script>

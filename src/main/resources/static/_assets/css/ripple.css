@@ -1,0 +1,25 @@
+a{
+    overflow:hidden !important;
+    outline: 0;
+}
+a .ripple, .sidebar .ripple{
+  position: absolute;
+  border-radius: 100%;
+  background: rgba(0,0,0,.2);
+  -webkit-transform: scale(0.4);
+  -ms-transform: scale(0.4);
+  transform: scale(0.4);
+  pointer-events: none;
+  transition: all .2s linear;
+}
+.dark .ripple{
+  background: rgba(255,255,255,.2);
+}
+
+.ripple.in {
+  transform: scale(1.5);
+}
+.ripple.out {
+  opacity: 0;
+  transform: scale(1.5);
+}

@@ -1,0 +1,283 @@
+<style>
+    .newEvent {
+        border: solid 1px #b00;
+        background: #ff0000;
+        color: #ffff00;
+        font-size: 12px;
+        padding: 5px;
+        animation: blinker 1s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+    }
+
+
+    @keyframes blinker {
+        from {
+            background: #600;
+        }
+        to {
+            background: #f00;
+        }
+    }
+</style>
+<div ng-controller="FacilityView as vm">
+
+    <div class="stepwizard ">
+        <div class="stepwizard-row setup-panel">
+            <div class="stepwizard-step">
+                <a href="index" type="button" class="btn btn-default btn-circle">1</a>
+
+                <p>Pick Facility</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-primary btn-circle" disabled="disabled">2</a>
+
+                <p>Set Date</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+
+                <p>Contact Info</p>
+            </div>
+            <div class="stepwizard-step">
+                <a href type="button" class="btn btn-default btn-circle" disabled="disabled"><i class="fa fa-check"></i> </a>
+                <p>Finish!</p>
+            </div>
+
+        </div>
+    </div>
+
+    <h2 class="page-title">Step 2 : Set the date</h2>
+
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">Booking List
+                    <!--<span class="label label-warning">Select the date which is not overlapped with other booking</span>-->
+                </div>
+                <div class="panel-body">
+                    <div ui-calendar="vm.uiConfig.calendar" ng-model="vm.eventSources" calendar="calendarVw"></div>
+                </div>
+
+            </div>
+        </div>
+<div class="col-sm-4">
+        <form class="form form-horizontal">
+            <!--<div class="col-md-6">-->
+            <div class="panel panel-primary">
+                <div class="panel-heading">Booking Date</div>
+                <div class="panel-body">
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">From</label>
+
+                        <div class="col-md-10">
+
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown"
+                                   data-target="#" href="#">
+                                    <div class="input-group">
+                                        <p class="form-control">{{vm.booking.startDate|date:'hh:mma dd-MMM-yyyy'}}</p>
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dLabel">
+                                    <datetimepicker data-ng-model="vm.booking.startDate"
+                                                    data-datetimepicker-config="{ dropdownSelector: '#dropdown2' }"
+                                                    on-set-time="vm.renderCalendar()"/>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Until</label>
+
+                        <div class="col-md-10">
+                            <!--<div class="form-control-static">-->
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" id="dropdown3" role="button" data-toggle="dropdown"
+                                   data-target="#" href="#">
+                                    <div class="input-group">
+                                        <!--<input type="text" class="form-control" data-ng-model="vm.booking.endDate">-->
+                                        <p class="form-control">{{vm.booking.endDate|date:'hh:mma dd-MMM-yyyy'}}</p>
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dLabel">
+                                    <datetimepicker data-ng-model="vm.booking.endDate"
+                                                    data-datetimepicker-config="{ dropdownSelector: '#dropdown3' }"
+                                                    data-before-render="vm.beforeRender($dates)"
+                                                    on-set-time="vm.renderCalendar()"/>
+                                </ul>
+                            </div>
+                            <!--</div>-->
+                        </div>
+                    </div>
+                    <!--{{vm.dateError}}-->
+                    <p class="text-danger" ng-if="!vm.dateError"><i class="fa fa-warning"></i> The date selected is not available!</p>
+                    <p class="text-danger" ng-if="vm.booking.endDate < vm.booking.startDate"><i class="fa fa-warning"></i> Start date MUST be before end date!</p>
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary" ng-disabled="!vm.dateError || vm.booking.endDate < vm.booking.startDate" ng-click="vm.nextPage()"><i
+                            class="fa fa-send"></i> Pick Date
+                    </button>
+                </div>
+            </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Facility Info</div>
+                    <div class="panel-body">
+                        <img class="thumbnail col-xs-12" ng-src="api/facility/thumbnail/{{vm.data.id}}"  fallback-src="_assets/images/placeholder.png"  ng-animate-ref="facility-img"/>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Facility</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.data.name}}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Location</label>
+
+                            <div class="col-md-6">
+                                <p class="form-control-static">{{vm.data.location}}</p>
+                                {{vm.data.timeLimit}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <!--</div>-->
+            <!--<div class="col-md-6">-->
+
+            <!--</div>-->
+        </form>
+</div>
+    </div>
+
+</div>
+<script>
+    App.registerCtrl("FacilityView", FacilityView);
+
+    FacilityView.$inject = ["$http", "$routeParams", "$location", "$filter", "uiCalendarConfig","$timeout","$compile", "$scope"];
+
+    function FacilityView($http, $routeParams, $location, $filter, uiCalendarConfig, $timeout, $compile, $scope) {
+        var vm = this;
+
+        vm.booking = {
+            'startDate': new Date(),
+            'endDate': new Date()
+        }
+
+        if ($routeParams.id) {
+            $http.get('api/facility/' + $routeParams.id).then(function (res) {
+                vm.data = res.data;
+            });
+        }
+
+        vm.nextPage = function () {
+            var startDate = $filter('date')(vm.booking.startDate, 'yyyy-MM-ddTHH:mm:ssZ');
+            var endDate = $filter('date')(vm.booking.endDate, 'yyyy-MM-ddTHH:mm:ssZ');
+            $location.path("booking/add/" + $routeParams.id + "/" + startDate + "/" + endDate);
+        }
+
+        vm.getFacilityInfo = function (id) {
+            $http.get("api/facility/" + id).then(
+                    function (res) {
+                        vm.data = res.data;
+                    }
+            );
+        }
+
+        vm.checkBooking = function () {
+            $http.get("api/facility/" + $routeParams.id + "/check", {
+                params: {
+                    startDate: $filter('date')(vm.booking.startDate, 'yyyy-MM-ddTHH:mm:ssZ'),
+                    endDate: $filter('date')(vm.booking.endDate, 'yyyy-MM-ddTHH:mm:ssZ')
+                }
+            }).then(
+                    function (res) {
+                        vm.dateError = res.data.available;
+                    }
+            )
+        }
+        vm.checkBooking();
+
+
+        vm.events2 = {
+            events: [{
+                title: 'New booking',
+                start: vm.booking.startDate,
+                end: vm.booking.endDate,
+                stick: true
+
+            }],
+            className: 'newEvent'
+//            color: 'black',
+//            textColor:'yellow'
+        };
+
+        vm.eventSources = [{
+            "url": "api/booking/list-calendar/" + $routeParams.id + "?status=0,2"
+//            "color": "#f00",
+//            "textColor": "yellow"
+        }, vm.events2]
+
+        vm.uiConfig = {
+//            basicWeek,basicDay,
+            calendar: {
+                height: 550,
+                editable: false,
+                eventOverlap: false,
+                header: {
+                    left: 'month,agendaWeek,agendaDay',
+                    center: 'title',
+                    right: 'today prev,next'
+                },
+                dayClick: function () {
+                },
+                eventDrop: function () {
+                },
+                eventResize: function () {
+                },
+                eventRender: function (event, element) {
+                    element.find('.fc-title').append("<br/>" + new Date(event.start).toLocaleTimeString() + "-" + new Date(event.end).toLocaleTimeString());
+                    $timeout(function(){
+                        $(element).attr('tooltip-html-unsafe', event.title +'<br/>Start:'+ new Date(event.start).toLocaleTimeString() + '<br/>End:' + new Date(event.end).toLocaleTimeString());
+//                        $(element).attr('tooltip-html',)
+                        $compile(element)($scope);
+                    });
+                }
+            }
+        };
+
+        vm.renderCalendar = function () {
+            vm.checkBooking();
+            vm.events2.events.splice(0, 1);
+            vm.events2.events.push({start: vm.booking.startDate, end: vm.booking.endDate, title: 'New Booking'});
+        };
+
+        vm.getEndDate = function(startDate){
+
+        }
+
+        Date.prototype.addMinutes= function(h){
+            this.setMinutes(this.getMinutes()+h);
+            return this;
+        }
+
+        vm.beforeRender = function ($dates) {
+            if (vm.data && vm.data.timeLimit){
+                var sd = new Date(vm.booking.startDate);
+                var endDateLimit = sd.addMinutes(vm.data.timeLimit);
+                for(i = 0; i <$dates.length ; i++){// || $dates[i].localDateValue() < sd
+                    if ($dates[i].localDateValue() > endDateLimit){
+                        $dates[i].selectable = false;
+                    }
+                }
+            }
+
+        };
+
+
+
+
+    }
+
+</script>

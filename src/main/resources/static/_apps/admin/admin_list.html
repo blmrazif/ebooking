@@ -1,0 +1,111 @@
+<div ng-controller="AdminList as vm" class="col-sm-8">
+
+    <h2 class="page-title">Booking List</h2>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Booking List</div>
+        <div class="panel-body"></div>
+        <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Facility</th>
+                <th>Description</th>
+                <th>Applicant</th>
+                <th>Date</th>
+                <th class="col-md-1">Status</th>
+                <th class="col-md-1">Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr ng-repeat="booking in vm.bookingList">
+                <td><a ng-href="#">{{booking.facility.name}}</a></td>
+                <td><a ng-href="#!/session/{{booking.id}}">{{booking.description}}</a></td>
+                <td>{{booking.applicant.name}}</td>
+                <td><strong>{{booking.startDate | date:'yyyy-MM-dd HH:mm:ss'}}</strong>
+                    until <strong>{{booking.endDate | date:'yyyy-MM-dd HH:mm:ss'}}</strong></td>
+                <td>
+                <span class="label label-success" ng-if="booking.status==2">APPROVED</span>
+                <span class="label label-danger" ng-if="booking.status==1">REJECTED</span>
+                <span class="label label-default" ng-if="booking.status==0">PENDING</span>
+                </td>
+                <td>
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                data-toggle="dropdown">
+                            Action <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <li><a href ng-click="vm.approveBooking(booking.id)">
+                                Approve</a></li>
+                            <li><a href ng-click="vm.rejectBooking(booking.id)">
+                                Reject</a></li>
+                        </ul>
+                    </div>
+
+                    <!--<a class="pure-button button-xsmall" ng-click="vm.approveBooking(booking.id)" href>Approve</a><a-->
+                        <!--class="pure-button button-xsmall" ng-click="vm.rejectBooking(booking.id)" href>Reject</a>-->
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+
+
+</div>
+<!--</div>-->
+<script>
+    App.registerCtrl("AdminList", AdminList);
+
+    AdminList.$inject = ["$http","$routeParams"];
+
+    function AdminList ($http, $routeParams) {
+        var vm = this;
+
+//        if ($routeParams.id) {
+//            $http.get('api/facility/' + $routeParams.id).then(function (res) {
+//                vm.data = res.data;
+//            });
+//        }
+
+//        vm.getFacilityInfo = function(id){
+//            $http.get("api/facility/"+id).then(
+//                    function(res){
+//                        vm.data = res.data;
+//                    }
+//            );
+//        }
+
+        vm.getBookingList = function(){
+            $http.get("api/booking/user/list").then(
+                    function(res){
+                        vm.bookingList = res.data;
+                    }
+            )
+        }
+        vm.getBookingList();
+
+        vm.approveBooking = function(id){
+            $http.post("api/booking/"+id+"/approve?status=2").then(
+                    function(res){
+                        vm.getBookingList();
+                    }
+            )
+        }
+
+        vm.rejectBooking = function(id){
+            $http.post("api/booking/"+id+"/approve?status=1").then(
+                    function(res){
+                        vm.getBookingList();
+                    }
+            )
+        }
+
+
+
+    }
+
+</script>

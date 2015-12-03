@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--xmlns:th="http://www.thymeleaf.org"-->
+<html ng-app="ebooking" xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <base th:href="|${@environment.getProperty('server.context-path')}/|" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>eTempah</title>
+
+    <link rel="stylesheet" href="_vendor/bootstrap/dist/css/bootstrap.min.css" >
+    <link rel="stylesheet" href="_assets/css/style.css" >
+    <!--<link href="_assets/css/animation.css" rel="stylesheet" >-->
+    <!--<link rel="stylesheet" href="_assets/css/ripple.css" type="text/css" >-->
+    <link rel="stylesheet" href="_vendor/fullcalendar/dist/fullcalendar.css"/>
+    <!--<link rel="stylesheet" href="_vendor/jquery-ripple/jquery.ripple.css"/>-->
+
+    <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/base/css/base.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/buttons/css/buttons.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/forms/css/forms.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/forms/css/forms-r.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/tables/css/tables.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/grids/css/grids-core.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/menus/css/menus-core.css">-->
+    <!--<link rel="stylesheet" href="_vendor/purecss/src/menus/css/menus-horizontal.css">-->
+    <link rel="stylesheet" href="_vendor/fontawesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="_vendor/angular-bootstrap-datetimepicker/src/css/datetimepicker.css">
+
+    <style>
+        /*body{*/
+            /*padding: 10px;*/
+        /*}*/
+        /*.viewport{padding:10px;}*/
+
+        body {
+            padding-top: 50px;
+        }
+        .starter-template {
+            padding: 40px 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body ng-controller="Home as vm">
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">eTempah</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav pull-right">
+                <li class="active"><a href="index">Home</a></li>
+                <li><a href="about"><div>About</div></a></li>
+                <!--<li><a href="contact">Contact</a></li>-->
+                <li><a href="admin/list" data-color="#e74c3c" target="_self">Admin</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container view-animate-container">
+    <div ng-view class="view-animate"></div>
+</div>
+
+
+
+<script src="_vendor/jquery/dist/jquery.min.js"></script>
+<script src="_vendor/angular/angular.min.js"></script>
+<script src="_vendor/angular-route/angular-route.min.js"></script>
+<script src="_vendor/angular-animate/angular-animate.min.js"></script>
+<script src="_vendor/bootstrap/js/dropdown.js"></script>
+<script src="_vendor/bootstrap/js/modal.js"></script>
+<script src="_vendor/bootstrap/js/collapse.js"></script>
+<script src="_vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<!--<script src="_vendor/jquery-ripple/jquery.ripple.js"></script>-->
+<script src="_assets/js/router.js"></script>
+<!--<script src="_assets/js/ripple.js"></script>-->
+<!--<script src="_assets/js/jquery.ripple.js"></script>-->
+
+<script type="text/javascript" src="_vendor/moment/min/moment.min.js"></script>
+<!--<script type="text/javascript" src="_vendor/angular/angular.min.js"></script>-->
+<script type="text/javascript" src="_vendor/angular-ui-calendar/src/calendar.js"></script>
+<script type="text/javascript" src="_vendor/fullcalendar/dist/fullcalendar.min.js"></script>
+<script type="text/javascript" src="_vendor/fullcalendar/dist/gcal.js"></script>
+<script type="text/javascript" src="_vendor/ng-file-upload/ng-file-upload-shim.min.js"></script>
+<script type="text/javascript" src="_vendor/ng-file-upload/ng-file-upload.min.js"></script>
+<script src="_vendor/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+<script>
+
+App.controller("Home", Home);
+
+Home.$inject = ["$http"];
+
+function Home ($http) {
+    var vm = this;
+
+    vm.getFacilityList = function(){
+        $http.get("api/facility/list").then(
+            function(res){
+                vm.facilityList = res.data;
+            }
+        );
+    }
+
+    vm.getFacilityList();
+
+
+}
+
+
+
+</script>
+
+</body>
+</html>
